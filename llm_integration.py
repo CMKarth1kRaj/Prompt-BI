@@ -105,10 +105,15 @@ def generate_dashboard_overview(dataset_context: str) -> dict:
 You are an expert Data Analyst. Given this dataset context, provide:
 1. A summary (2-3 sentences) of what the data represents.
 2. Two JSON objects for the most insightful charts (bar, line, or pie).
+3. A list of 3-4 key business metrics (KPIs) relevant to the dataset (e.g., Total Profit, Campaign Spending, Loss, Revenue, Total Orders, etc.) along with the SQL to calculate them.
 
 Return ONLY a valid JSON object with this structure:
 {{
   "summary": "...",
+  "metrics": [
+    {{ "label": "Revenue", "sql": "SELECT SUM(amount) FROM df", "prefix": "$", "suffix": "" }},
+    ...
+  ],
   "chart1": {{ "sql": "...", "chart_type": "...", "x_axis": "...", "y_axis": "...", "insight": "..." }},
   "chart2": {{ "sql": "...", "chart_type": "...", "x_axis": "...", "y_axis": "...", "insight": "..." }}
 }}

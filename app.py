@@ -556,31 +556,70 @@ if "df" in st.session_state:
         )
 
         # ── Metric tiles ──────────────────────────────────────────────────────────
-        c1, c2, c3, c4 = st.columns(4)
+        overview = st.session_state.get("dashboard_overview", {})
+        metrics_data = overview.get("metrics", [])
 
-        numeric_cols = df.select_dtypes("number").shape[1]
-        text_cols    = df.select_dtypes("object").shape[1]
-        missing_pct  = round(df.isnull().mean().mean() * 100, 1)
+        if metrics_data:
+            # Display dynamic AI metrics
+            cols = st.columns(len(metrics_data))
+            for i, m in enumerate(metrics_data):
+                try:
+                    res = psql.sqldf(m["sql"], {"df": df})
+                    val = res.iloc[0, 0]
+                    # Format value if numeric
+                    if isinstance(val, (int, float)):
+                        if val >= 1_000_000:
+                            display_val = f"{val/1_000_000:.1f}M"
+                        elif val >= 1_000:
+                            display_val = f"{val/1_000:.1f}K"
+                        else:
+                            display_val = f"{val}"
+                    else:
+                        display_val = str(val)
+                    
+                    prefix = m.get("prefix", "")
+                    suffix = m.get("suffix", "")
+                    
+                    cols[i].markdown(
+                        f"""
+                        <div class="metric-card">
+                            <div class="metric-label">{m['label']}</div>
+                            <div class="metric-value">{prefix}{display_val}{suffix}</div>
+                            <div class="metric-sub">AI Calculated</div>
+                            <div class="metric-delta">▲ Live</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                except Exception as e:
+                    cols[i].error(f"Error calculation {m['label']}")
+        else:
+            # Fallback to default metrics if missing
+            c1, c2, c3, c4 = st.columns(4)
 
-        for col, label, val, sub in [
-            (c1, "TOTAL ROWS",     f"{num_rows:,}",    "Records in dataset"),
-            (c2, "COLUMNS",        str(num_cols),       "Dataset dimensions"),
-            (c3, "NUMERIC COLS",   str(numeric_cols),   f"{text_cols} text columns"),
-            (c4, "MISSING DATA",   f"{missing_pct}%",   "Null value rate"),
-        ]:
-            delta_cls = "neg" if label == "MISSING DATA" and missing_pct > 5 else ""
-            delta_sym = "▲" if label != "MISSING DATA" else ("▼" if missing_pct > 0 else "✔")
-            col.markdown(
-                f"""
-                <div class="metric-card">
-                    <div class="metric-label">{label}</div>
-                    <div class="metric-value">{val}</div>
-                    <div class="metric-sub">{sub}</div>
-                    <div class="metric-delta {delta_cls}">{delta_sym} Live</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            numeric_cols = df.select_dtypes("number").shape[1]
+            text_cols    = df.select_dtypes("object").shape[1]
+            missing_pct  = round(df.isnull().mean().mean() * 100, 1)
+
+            for col, label, val, sub in [
+                (c1, "TOTAL ROWS",     f"{num_rows:,}",    "Records in dataset"),
+                (c2, "COLUMNS",        str(num_cols),       "Dataset dimensions"),
+                (c3, "NUMERIC COLS",   str(numeric_cols),   f"{text_cols} text columns"),
+                (c4, "MISSING DATA",   f"{missing_pct}%",   "Null value rate"),
+            ]:
+                delta_cls = "neg" if label == "MISSING DATA" and missing_pct > 5 else ""
+                delta_sym = "▲" if label != "MISSING DATA" else ("▼" if missing_pct > 0 else "✔")
+                col.markdown(
+                    f"""
+                    <div class="metric-card">
+                        <div class="metric-label">{label}</div>
+                        <div class="metric-value">{val}</div>
+                        <div class="metric-sub">{sub}</div>
+                        <div class="metric-delta {delta_cls}">{delta_sym} Live</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
         st.markdown("<br>", unsafe_allow_html=True)
 
