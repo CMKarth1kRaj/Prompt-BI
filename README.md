@@ -3,7 +3,6 @@
 ## Where Conversation Meets Data
 
 [![GitHub Workflow Status](https://img.shields.io/badge/Status-Hackathon%20Project-brightgreen)](https://github.com/CMKarth1kRaj/Prompt-BI)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/downloads/)
 [![Streamlit App](https://img.shields.io/badge/Streamlit-Built-FF4B4B)](https://streamlit.io)
 
@@ -38,14 +37,14 @@ Prompt BI is built on a streamlined, Python-centric architecture designed for ra
 ### 3.1. Core Pipeline: Text to Dashboard
 ```mermaid
 graph TD
-    A[User Prompt] --> B(Streamlit Chat UI)
-    B --> C{Context Engine:<br>CSV Schema & Chat History}
-    C --> D[Google Gemini API]
-    D -- (Generates JSON: SQL + Chart Config) --> E{JSON Parser & Validator}
-    E --> F[PandasQL <br>(SQL on DataFrame)]
-    F --> G[Plotly Express <br>(Interactive Charts)]
-    G --> H[Streamlit <br>Dashboard Display]
-    H -- (Updates Chat History) --> B
+    A["User Prompt"] --> B("Streamlit Chat UI")
+    B --> C{"Context Engine:<br>CSV Schema & Chat History"}
+    C --> D["Google Gemini API"]
+    D -- "Generates JSON: SQL + Chart Config" --> E{"JSON Parser & Validator"}
+    E --> F["PandasQL <br>(SQL on DataFrame)"]
+    F --> G["Plotly Express <br>(Interactive Charts)"]
+    G --> H["Streamlit <br>Dashboard Display"]
+    H -- "Updates Chat History" --> B
 ```
 
 **Components:**
@@ -120,13 +119,7 @@ Follow these steps to get Prompt BI running on your local machine.
 
 ---
 
-## 📄 8. License
-
-This project is licensed under the MIT License.
-
----
-
-## 🌟 9. Team & Acknowledgments
+## 🌟 8. Team & Acknowledgments
 
 *   **CM Karthik Raj**
 *   **Special Thanks:** To Google Gemini API for the LLM capabilities, Streamlit for the rapid prototyping, and the open-source data community.
